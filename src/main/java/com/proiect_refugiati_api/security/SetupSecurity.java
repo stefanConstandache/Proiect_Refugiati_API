@@ -36,54 +36,59 @@ public class SetupSecurity implements ApplicationListener<ContextRefreshedEvent>
     private PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
-        if (alreadySetup)
-            return;
-        PrivilegeModel readPrivilegeModel
-                = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        PrivilegeModel writePrivilegeModel
-                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-
-        List<PrivilegeModel> adminPrivilegeModels = Arrays.asList(
-                readPrivilegeModel, writePrivilegeModel);
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivilegeModels);
-        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilegeModel));
-
-        RoleModel adminRoleModel = roleRepository.findByName("ROLE_ADMIN");
-        UserModel userModel = new UserModel();
-        userModel.setFirstName("Test");
-        userModel.setLastName("Test");
-        userModel.setPassword(passwordEncoder.encode("test"));
-        userModel.setEmail("test@test.com");
-        userModel.setRoleModels(Arrays.asList(adminRoleModel));
-        userRepository.save(userModel);
-
-        alreadySetup = true;
     }
 
-    @Transactional
-    PrivilegeModel createPrivilegeIfNotFound(String name) {
-
-        PrivilegeModel privilegeModel = privilegeRepository.findByName(name);
-        if (privilegeModel == null) {
-            privilegeModel = PrivilegeModel.builder().name(name).build();
-            privilegeRepository.save(privilegeModel);
-        }
-        return privilegeModel;
-    }
-
-    @Transactional
-    RoleModel createRoleIfNotFound(
-            String name, Collection<PrivilegeModel> privilegeModels) {
-
-        RoleModel roleModel = roleRepository.findByName(name);
-        if (roleModel == null) {
-            roleModel = RoleModel.builder().name(name).build();
-            roleModel.setPrivilegeModels(privilegeModels);
-            roleRepository.save(roleModel);
-        }
-        return roleModel;
-    }
+//    @Override
+//    @Transactional
+//    public void onApplicationEvent(ContextRefreshedEvent event) {
+//
+//        if (alreadySetup)
+//            return;
+//        PrivilegeModel readPrivilegeModel
+//                = createPrivilegeIfNotFound("READ_PRIVILEGE");
+//        PrivilegeModel writePrivilegeModel
+//                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+//
+//        List<PrivilegeModel> adminPrivilegeModels = Arrays.asList(
+//                readPrivilegeModel, writePrivilegeModel);
+//        createRoleIfNotFound("ROLE_ADMIN", adminPrivilegeModels);
+//        createRoleIfNotFound("ROLE_USER", Arrays.asList(readPrivilegeModel));
+//
+//        RoleModel adminRoleModel = roleRepository.findByName("ROLE_ADMIN");
+//        UserModel userModel = new UserModel();
+//        userModel.setFirstName("Test");
+//        userModel.setLastName("Test");
+//        userModel.setPassword(passwordEncoder.encode("test"));
+//        userModel.setEmail("test@test.com");
+//        userModel.setRoleModels(Arrays.asList(adminRoleModel));
+//        userRepository.save(userModel);
+//
+//        alreadySetup = true;
+//    }
+//
+//    @Transactional
+//    PrivilegeModel createPrivilegeIfNotFound(String name) {
+//
+//        PrivilegeModel privilegeModel = privilegeRepository.findByName(name);
+//        if (privilegeModel == null) {
+//            privilegeModel = PrivilegeModel.builder().name(name).build();
+//            privilegeRepository.save(privilegeModel);
+//        }
+//        return privilegeModel;
+//    }
+//
+//    @Transactional
+//    RoleModel createRoleIfNotFound(
+//            String name, Collection<PrivilegeModel> privilegeModels) {
+//
+//        RoleModel roleModel = roleRepository.findByName(name);
+//        if (roleModel == null) {
+//            roleModel = RoleModel.builder().name(name).build();
+//            roleModel.setPrivilegeModels(privilegeModels);
+//            roleRepository.save(roleModel);
+//        }
+//        return roleModel;
+//    }
 }

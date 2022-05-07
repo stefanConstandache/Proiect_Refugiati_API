@@ -1,4 +1,4 @@
-package com.proiect_refugiati_api.messagingstompwebsocket;
+package com.proiect_refugiati_api.websockets;
 
 public class HelloMessage {
 
