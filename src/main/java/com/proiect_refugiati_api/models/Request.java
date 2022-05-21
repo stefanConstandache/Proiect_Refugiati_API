@@ -25,8 +25,8 @@ public class Request {
     @Column(name = "user_notes")
     private String userNotes;
 
-    @Column(name = "creation_date")
-    private Date creationDate;
+    @Column(name = "created_on")
+    private Date createdOn;
 
     @Column(name = "request_status")
     private String requestStatus;

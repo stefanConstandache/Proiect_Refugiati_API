@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @Controller
 @RestController
 @RequestMapping("/api/")
@@ -19,6 +20,7 @@ public class RequestController {
 
     @PostMapping("/createRequest")
     public Request createRequest(@RequestBody Request request) {
+        System.out.println(request);
         return requestRepository.save(request);
     }
 
@@ -27,12 +29,17 @@ public class RequestController {
         return requestRepository.findAll();
     }
 
+    @GetMapping("/getRequestsForUser/{email}")
+    public List<Request> getRequestsForUser(@PathVariable String email) {
+        return requestRepository.getRequestsForUser(email);
+    }
+
     @PutMapping("/acceptRequest")
     public ResponseEntity<Request> acceptRequest(@RequestBody Request requestDetails) {
         Request request = requestRepository.getRequestById(requestDetails.getId());
 
         request.setAcceptedBy(requestDetails.getAcceptedBy());
-        request.setRequestStatus("Accepted");
+        request.setRequestStatus(requestDetails.getRequestStatus());
 
         Request requestUpdated = requestRepository.save(request);
 
@@ -44,7 +51,7 @@ public class RequestController {
         Request request = requestRepository.getRequestById(requestDetails.getId());
 
         request.setAcceptedBy(requestDetails.getAcceptedBy());
-        request.setRequestStatus("Rejected");
+        request.setRequestStatus(requestDetails.getRequestStatus());
 
         Request requestUpdated = requestRepository.save(request);
 
@@ -55,8 +62,7 @@ public class RequestController {
     public ResponseEntity<Request> completeRequest(@RequestBody Request requestDetails) {
         Request request = requestRepository.getRequestById(requestDetails.getId());
 
-        request.setAcceptedBy(requestDetails.getAcceptedBy());
-        request.setRequestStatus("Completed");
+        request.setRequestStatus(requestDetails.getRequestStatus());
 
         Request requestUpdated = requestRepository.save(request);
 

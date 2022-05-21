@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @Controller
 @RestController
 @RequestMapping("/api/")
@@ -17,12 +18,13 @@ public class RefugeeController {
 
     @PostMapping("/createRefugee")
     public Refugee createUser(@RequestBody Refugee refugee) {
+        System.out.println(refugee);
         return refugeeRepository.save(refugee);
     }
 
-    @GetMapping("/getRefugee")
-    public Refugee getRefugee(@RequestBody Refugee refugeeEmail) {
-        return refugeeRepository.getRefugeeByEmail(refugeeEmail.getEmail());
+    @GetMapping("/getRefugee/{email}")
+    public Refugee getRefugee(@PathVariable String email) {
+        return refugeeRepository.getRefugeeByEmail(email);
     }
 
     @PutMapping("/updateRefugee")
