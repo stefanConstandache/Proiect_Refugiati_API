@@ -1,6 +1,10 @@
 package com.proiect_refugiati_api.amqp_config;
 
 import org.springframework.amqp.core.AnonymousQueue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Configuration;
@@ -8,62 +12,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AMQPConfig {
 
+    public static final String QUEUE = "idp_email_queue";
+    public static final String EXCHANGE = "idp_email_exchange";
+    public static final String ROUTING_KEY = "idp_email_routing_key";
+
     @Bean
-    public DirectExchange direct() {
-        return new DirectExchange("some.exchange");
+    public Queue queue() {
+        return new Queue(QUEUE);
     }
 
     @Bean
-    public Queue autoDeleteQueue1() {
-        return new AnonymousQueue();
+    public TopicExchange exchange() {
+        return new TopicExchange(EXCHANGE);
     }
 
     @Bean
-    public Queue autoDeleteQueue2() {
-        return new AnonymousQueue();
+    public Binding bindingEmailQueue(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue)
+                .to(exchange)
+                .with(ROUTING_KEY);
     }
 
     @Bean
-    public Binding binding1a(DirectExchange direct,
-                             Queue autoDeleteQueue1) {
-        return BindingBuilder.bind(autoDeleteQueue1)
-                .to(direct)
-                .with("orange");
+    public MessageConverter converter() {
+        return new Jackson2JsonMessageConverter();
     }
 
     @Bean
-    public Binding binding1b(DirectExchange direct,
-                             Queue autoDeleteQueue1) {
-        return BindingBuilder.bind(autoDeleteQueue1)
-                .to(direct)
-                .with("black");
-    }
-
-    @Bean
-    public Binding binding2a(DirectExchange direct,
-                             Queue autoDeleteQueue2) {
-        return BindingBuilder.bind(autoDeleteQueue2)
-                .to(direct)
-                .with("green");
-    }
-
-    @Bean
-    public Binding binding2b(DirectExchange direct,
-                             Queue autoDeleteQueue2) {
-        return BindingBuilder.bind(autoDeleteQueue2)
-                .to(direct)
-                .with("black");
-    }
-
-    @Bean
-    public AMQPReceiver receiver() {
-        return new AMQPReceiver();
-    }
-
-
-    //@Profile("sender")
-    @Bean
-    public AMQPSender sender() {
-        return new AMQPSender();
+    public AmqpTemplate template(ConnectionFactory connectionFactory) {
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter());
+        return rabbitTemplate;
     }
 }
